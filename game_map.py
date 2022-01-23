@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Iterable, Iterator, Optional, TYPE_CHECKING
 from tcod.console import Console
-from entity import Actor
+from entity import Actor, Item
 import tile_types
 import numpy as np  # type: ignore
 
@@ -25,6 +25,10 @@ class GameMap:
     @property
     def gamemap(self) -> GameMap:
         return self
+
+    @property
+    def items(self) -> Iterator[Item]:
+        yield from (entity for entity in self.entities if isinstance(entity, Item))
 
     @property
     def actors(self) -> Iterator[Actor]:
