@@ -4,8 +4,8 @@ from typing import List, Tuple, TYPE_CHECKING
 
 import numpy as np  # type: ignore
 import tcod
-
-from actions import Action, MeleeAction, MovementAction, WaitAction
+import random
+from actions import Action, MeleeAction, MovementAction, WaitAction, BumpAction
 
 if TYPE_CHECKING:
     from entity import Actor
@@ -68,3 +68,29 @@ class HostileEnemy(BaseAI):
             ).perform()
 
         return WaitAction(self.entity).perform()
+
+
+class ConfusedEnemy(BaseAI):
+    """
+    A confused enemy will stumble around aimlessly for a given number of turns
+    If an actor occupies a tile it is randomly moving into, it will attack
+    """
+
+    def __init__(self, entity: Actor, previous_ai: Optional[BaseAI], turns_remaining: int):
+        super().__init__(entity)
+        self.previous_ai = previous_ai
+        self.turns_remaining = turns_remaining
+
+    def perform(self) -> None:
+        # Revert the AI back to the original state if the effect has run out
+        if self.turns_remaining <= 0:
+            self.engine.message_log.add_message(
+                f'The {self.entity.name} is no longer confused'
+            )
+            self.entity.ai = self.previous_ai
+        else:
+            direction_x, direction_y = random.choice([
+                (-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)
+            ])
+            self.turns_remaining -= 1
+            return BumpAction(self.entity, direction_x, direction_y).perform()
