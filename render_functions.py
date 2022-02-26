@@ -1,7 +1,7 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
 
 import color
+from typing import Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from tcod import Console
@@ -32,3 +32,13 @@ def render_names_at_mouse_location(
     mouse_x, mouse_y = engine.mouse_location
     names_at_mouse_location = get_name_at_location(x=mouse_x, y=mouse_y, game_map=engine.game_map)
     console.print(x=x, y=y, string=names_at_mouse_location)
+
+
+def render_dungeon_level(
+        console: Console, dungeon_level: int, location: Tuple[int, int]
+) -> None:
+    """
+    Render the level the player is currently on, at the given location
+    """
+    x, y = location
+    console.print(x=x, y=y, string=f'Dungeon Level: {dungeon_level}')
